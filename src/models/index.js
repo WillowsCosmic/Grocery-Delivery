@@ -37,6 +37,7 @@ export{
     Category,
     Branch,
     Order,
+    OrderItem,
     Counter,
     Customer,
     DeliveryPartner,

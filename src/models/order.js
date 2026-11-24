@@ -103,7 +103,7 @@ const Order = sequelize.define(
   }
 );
 
-// Separate table for Order Items (replaces the items array in Mongoose)
+
 export const OrderItem = sequelize.define('OrderItem', {
   orderId: {
     type: DataTypes.INTEGER,

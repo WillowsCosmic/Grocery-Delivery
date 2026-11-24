@@ -132,3 +132,69 @@ export const updateOrderStatus = async (req, reply) => {
     return reply.status(500).send({ message: 'Failed to update order status', error });
   }
 };
+
+export const getOrders = async (req, reply) => {
+  try {
+    const { status, customerId, deliveryPartnerId, branchId } = req.query;
+    const where = {};
+
+    if (status) {
+      where.status = status;
+    }
+    if (customerId) {
+      where.customerId = customerId;
+    }
+    if (deliveryPartnerId) {
+      where.deliveryPartnerId = deliveryPartnerId;
+    }
+    if (branchId) {
+      where.branchId = branchId;
+    }
+
+    const orders = await Order.findAll({
+      where,
+      include: [
+        { model: Customer, as: 'customer' },
+        { model: Branch, as: 'branch' },
+        { model: DeliveryPartner, as: 'deliveryPartner' },
+        {
+          model: OrderItem,
+          as: 'items',
+          include: [{ model: Product, as: 'item' }],
+        },
+      ],
+    });
+    return reply.send(orders);
+  } catch (error) {
+    return reply.status(500).send({ message: 'Failed to update order status', error });
+  }
+};
+export const getOrderById = async (req, reply) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findByPk(orderId, {
+      include: [
+        { model: Customer, as: 'customer' },
+        { model: Branch, as: 'branch' },
+        { model: DeliveryPartner, as: 'deliveryPartner' },
+        {
+          model: OrderItem,
+          as: 'items',
+          include: [{ model: Product, as: 'item' }],
+        },
+      ],
+    });
+
+    if (!order) {
+      return reply.status(404).send({ message: 'Order not found' });
+    }
+
+    return reply.send(order);
+  } catch (error) {
+    return reply
+      .status(500)
+      .send({ message: 'Failed to retrieve order', error });
+  }
+};
+
